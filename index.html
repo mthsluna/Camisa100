@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camisa100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">CAMISA<span>100</span>
+      <small>quanto menos dicas, mais pontos</small>
+    </div>
+    <div class="stats">
+      <div>Pontuação total<strong id="totalScore">0</strong></div>
+      <div>Rodada<strong id="roundNum">1</strong></div>
+      <div>Acertos<strong id="hitCount">0</strong></div>
+    </div>
+  </header>
+
+  <main class="board">
+
+    <section class="panel jersey-panel">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 220 220" width="220" height="220">
+          <circle class="ring-track" cx="110" cy="110" r="98"></circle>
+          <circle class="ring-value" id="ringValue" cx="110" cy="110" r="98" stroke-dasharray="615.75" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="jersey-shape">
+          <svg class="jersey-svg" viewBox="0 0 100 100">
+            <path d="M30 6 L14 18 L4 32 L16 42 L24 36 L24 90 L76 90 L76 36 L84 42 L96 32 L86 18 L70 6 L62 12 C 58 16 42 16 38 12 Z"
+                  fill="#f4c531" stroke="#25200a" stroke-width="2.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="jersey-number" id="numberDisplay">--</div>
+      </div>
+      <div class="points-remaining">Rodada vale <b id="pointsValue">100</b> pontos</div>
+      <div class="round-note">Toda rodada começa só com o número da camisa. Cada dica pedida reduz o valor da rodada.</div>
+    </section>
+
+    <div>
+      <section class="panel clues-panel">
+        <h2>Pistas reveladas</h2>
+        <ul id="cluesList"></ul>
+        <button class="btn btn-gold" id="hintBtn">Pedir dica (&minus;15 pontos)</button>
+      </section>
+
+      <section class="panel guess-panel">
+        <h2>Quem é o jogador?</h2>
+        <div class="guess-row">
+          <input id="guessInput" type="text" list="playersList" placeholder="Digite o nome do jogador..." autocomplete="off">
+          <datalist id="playersList"></datalist>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-good" id="guessBtn">Chutar</button>
+          <button class="btn btn-ghost" id="revealBtn">Revelar resposta</button>
+          <button class="btn btn-ghost" id="nextBtn" disabled>Próximo jogador</button>
+        </div>
+        <div id="feedback" class="info"></div>
+        <div class="reveal-card" id="revealCard"></div>
+      </section>
+    </div>
+
+  </main>
+
+  <footer class="note">
+    Base de jogadores selecionada manualmente com atletas brasileiros (seleção e clubes), pois APIs públicas de futebol
+    exigem chave secreta ou não liberam chamadas diretas do navegador (CORS), o que inviabilizaria rodar tudo dentro
+    deste artefato. Alguns dados (época, apelido, naturalidade) são simplificados para fins de jogo.
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
