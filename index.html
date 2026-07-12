@@ -41,9 +41,9 @@
         <span class="score-float" id="scoreFloat"></span>
       </div>
       <div class="difficulty-bar" id="difficultyBar" role="group" aria-label="Nível de dificuldade">
-        <button class="diff-btn active" data-diff="facil" type="button">Fácil</button>
-        <button class="diff-btn" data-diff="medio" type="button">Médio</button>
-        <button class="diff-btn" data-diff="dificil" type="button">Difícil</button>
+        <button class="diff-btn active" data-diff="facil" type="button" aria-label="Fácil" title="Fácil">😊</button>
+        <button class="diff-btn" data-diff="medio" type="button" aria-label="Médio" title="Médio">😐</button>
+        <button class="diff-btn" data-diff="dificil" type="button" aria-label="Difícil" title="Difícil">😠</button>
       </div>
       <div class="jersey-mid">
         <div class="ring-wrap" id="jerseyBtn" role="button" tabindex="0" aria-label="Girar para o próximo jogador">
@@ -64,7 +64,7 @@
       <section class="panel clues-panel">
         <h2>Pistas reveladas</h2>
         <ul id="cluesList"></ul>
-        <button class="btn btn-gold" id="hintBtn">Dica <span class="hint-cost" id="hintCost">grátis</span></button>
+        <button class="btn btn-gold" id="hintBtn">Dica</button>
       </section>
 
       <section class="panel guess-panel">
@@ -100,6 +100,7 @@
     <div class="hint-overlay-title">Escolha uma carta</div>
     <div class="hint-cards" id="hintCards"></div>
   </div>
+  <div class="boom-flash" id="boomFlash"><span class="boom-text">BOOM!</span></div>
 </div>
 
 <div class="answer-overlay" id="answerOverlay">

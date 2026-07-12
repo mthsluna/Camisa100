@@ -12,22 +12,49 @@
   }
 
   // ---------- state ----------
-  // Cost to reveal each successive hint card: the 1st is free, and every
-  // card after that costs more than the one before it.
-  const HINT_COSTS = [0, 10, 15, 25, 30];
+  // Cada carta de dica tem um valor fixo e diferente das outras (definido
+  // acima em HINT_POOL), pensado para que usar todas as 5 deixe pelo menos
+  // 20 pontos sobrando (4 chances de chute a −5 cada).
   const BASE_POINTS = 100;
   const MISS_PENALTY = 5;
   const HINT_POOL = [
-    {key:"posicao", label:"Posição"},
-    {key:"time", label:"Clube marcante"},
-    {key:"estado", label:"Estado natal"},
-    {key:"decada", label:"Época"},
-    {key:"titulo", label:"Título marcante"}
+    {key:"posicao", label:"Posição", cost:5},
+    {key:"estado", label:"Estado natal", cost:10},
+    {key:"decada", label:"Época", cost:15},
+    {key:"time", label:"Clube marcante", cost:20},
+    {key:"titulo", label:"Título marcante", cost:30}
   ];
+
+  // Ícone (SVG em cinza, traço simples) para o verso de cada carta de dica
+  const HINT_ICONS = {
+    posicao: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 7.2l3.4 2.4-1.3 4h-4.2l-1.3-4L12 7.2Z"/>
+      <path d="M12 7.2V4M15.4 9.6l2.9-1.7M14.1 13.6l1.7 2.7M9.9 13.6l-1.7 2.7M8.6 9.6l-2.9-1.7"/>
+    </svg>`,
+    estado: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/>
+      <ellipse cx="12" cy="12" rx="4" ry="9"/>
+      <path d="M3.3 9.5h17.4M3.3 14.5h17.4"/>
+    </svg>`,
+    decada: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 5.3c1.9-1 4.4-1 6 .1v13.3c-1.6-1.1-4.1-1.1-6-.1V5.3Z"/>
+      <path d="M19.5 5.3c-1.9-1-4.4-1-6 .1v13.3c1.6-1.1 4.1-1.1 6-.1V5.3Z"/>
+    </svg>`,
+    time: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.4l7 2.5v5.2c0 4.7-3 7.8-7 9.4-4-1.6-7-4.7-7-9.4V5.9l7-2.5Z"/>
+      <path d="M12 3.4v16.9"/>
+    </svg>`,
+    titulo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/>
+      <path d="M8 5H5.6a2.4 2.4 0 0 0 0 4.8H8M16 5h2.4a2.4 2.4 0 0 1 0 4.8H16"/>
+      <path d="M12 12v3M9 19h6M10 19v-2.1c0-.4.3-.7.7-.7h2.6c.4 0 .7.3.7.7V19"/>
+    </svg>`
+  };
 
   let pool = shuffle([...activePlayers()]);
   let current = null;
-  let hintsUsed = 0;
+  let hintCostUsed = 0;
   let remainingHints = [];
   let cardsOpen = false;
   let totalScore = 0;
@@ -104,7 +131,6 @@
   const hintBtn = document.getElementById("hintBtn");
   const hintOverlay = document.getElementById("hintOverlay");
   const hintCards = document.getElementById("hintCards");
-  const hintCost = document.getElementById("hintCost");
   const guessInput = document.getElementById("guessInput");
   const guessBtn = document.getElementById("guessBtn");
   const revealBtn = document.getElementById("revealBtn");
@@ -192,20 +218,8 @@
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
   }
 
-  function costOfHint(index){
-    return HINT_COSTS[index] !== undefined ? HINT_COSTS[index] : HINT_COSTS[HINT_COSTS.length - 1];
-  }
-
   function currentPoints(){
-    let cost = 0;
-    for(let i = 0; i < hintsUsed; i++) cost += costOfHint(i);
-    return Math.max(BASE_POINTS - cost - missPenalty, 0);
-  }
-
-  function updateHintCost(){
-    const nextCost = costOfHint(hintsUsed);
-    hintCost.textContent = nextCost === 0 ? "grátis" : `\u2212${nextCost}`;
-    hintCost.classList.toggle("paid", nextCost > 0);
+    return Math.max(BASE_POINTS - hintCostUsed - missPenalty, 0);
   }
 
   function updateRing(){
@@ -221,7 +235,7 @@
   }
 
   function startRound(){
-    hintsUsed = 0;
+    hintCostUsed = 0;
     remainingHints = shuffle([...HINT_POOL]);
     cardsOpen = false;
     roundOver = false;
@@ -229,7 +243,6 @@
 
     pointsValue.textContent = currentPoints();
     updateRing();
-    updateHintCost();
     renderClueSlots();
     hintOverlay.classList.remove("show");
     hintCards.innerHTML = "";
@@ -321,18 +334,55 @@
       feedback.className = "info";
       return;
     }
-    openHintCards();
+    if(remainingHints.length === HINT_POOL.length){
+      giveFreeRandomHint();
+    } else {
+      openHintCards();
+    }
+  }
+
+  function giveFreeRandomHint(){
+    cardsOpen = true;
+    hintBtn.classList.add("hidden");
+    feedback.textContent = "Sua primeira dica é grátis!";
+    feedback.className = "info";
+    sfx.hintOpen();
+
+    // A dica grátis é sempre a de menor custo, para que o "piso" de pontos
+    // ao usar todas as 5 dicas fique previsível (sempre ~25), em vez de
+    // variar de 25 a 50 dependendo de qual carta calhasse de ser sorteada.
+    const hint = remainingHints.reduce((min, h) => h.cost < min.cost ? h : min, remainingHints[0]);
+
+    hintCards.innerHTML = "";
+    const card = document.createElement("div");
+    card.className = "hint-card";
+    card.innerHTML = `
+      <div class="hint-card-inner">
+        <div class="hint-card-face hint-card-back">
+          <span class="hint-card-icon">${HINT_ICONS[hint.key]}</span>
+          <span class="hint-card-price">grátis</span>
+        </div>
+        <div class="hint-card-face hint-card-front">
+          <span class="tag"></span>
+          <span class="val"></span>
+        </div>
+      </div>`;
+    hintCards.appendChild(card);
+
+    hintOverlay.classList.add("show");
+    document.body.classList.add("no-scroll");
+
+    setTimeout(() => pickHintCard(card, hint, true), 750);
   }
 
   function openHintCards(){
     cardsOpen = true;
     hintBtn.classList.add("hidden");
-    feedback.textContent = "Escolha uma carta para revelar uma dica aleatória.";
+    feedback.textContent = "Escolha uma carta: cada uma tem um valor diferente.";
     feedback.className = "info";
     sfx.hintOpen();
 
-    const count = Math.min(3, remainingHints.length);
-    const offered = shuffle([...remainingHints]).slice(0, count);
+    const offered = shuffle([...remainingHints]);
 
     hintCards.innerHTML = "";
     offered.forEach(hint => {
@@ -340,7 +390,10 @@
       card.className = "hint-card";
       card.innerHTML = `
         <div class="hint-card-inner">
-          <div class="hint-card-face hint-card-back">?</div>
+          <div class="hint-card-face hint-card-back">
+            <span class="hint-card-icon">${HINT_ICONS[hint.key]}</span>
+            <span class="hint-card-price">${hint.cost === 0 ? "grátis" : `\u2212${hint.cost}`}</span>
+          </div>
           <div class="hint-card-face hint-card-front">
             <span class="tag"></span>
             <span class="val"></span>
@@ -354,7 +407,7 @@
     document.body.classList.add("no-scroll");
   }
 
-  function pickHintCard(cardEl, hint){
+  function pickHintCard(cardEl, hint, isFree = false){
     if(!cardsOpen) return;
     cardsOpen = false;
     sfx.hintPick();
@@ -365,7 +418,7 @@
     [...hintCards.children].forEach(c => { if(c !== cardEl) c.classList.add("discarded"); });
 
     remainingHints = remainingHints.filter(h => h.key !== hint.key);
-    hintsUsed++;
+    if(!isFree) hintCostUsed += hint.cost;
     pointsValue.textContent = currentPoints();
     updateRing();
 
@@ -376,7 +429,6 @@
       document.body.classList.remove("no-scroll");
       hintCards.innerHTML = "";
       hintBtn.classList.remove("hidden");
-      updateHintCost();
       const pts = currentPoints();
       if(pts <= 0){
         hintBtn.disabled = true;
