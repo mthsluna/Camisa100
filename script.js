@@ -1,50 +1,20 @@
 (function(){
 
-  const players = [
-    {nome:"Pelé", numero:10, posicao:"Atacante", apelido:"O Rei do Futebol", time:"Santos", estado:"Minas Gerais", decada:"1950–1970", titulo:"3 Copas do Mundo (1958, 1962, 1970)", aliases:["pele","edson arantes do nascimento","o rei"]},
-    {nome:"Garrincha", numero:7, posicao:"Ponta-direita", apelido:"Anjo das Pernas Tortas", time:"Botafogo", estado:"Rio de Janeiro", decada:"1950–1960", titulo:"2 Copas do Mundo (1958, 1962)", aliases:["garrincha","mane garrincha","manuel francisco dos santos"]},
-    {nome:"Ronaldo Nazário", numero:9, posicao:"Atacante", apelido:"Fenômeno", time:"Inter de Milão / Real Madrid / Barcelona", estado:"Rio de Janeiro", decada:"1990–2000", titulo:"2 Copas do Mundo (1994, 2002)", aliases:["ronaldo","ronaldo nazario","r9","fenomeno"]},
-    {nome:"Ronaldinho Gaúcho", numero:10, posicao:"Meia-atacante", apelido:"Bruxo", time:"Barcelona / Milan / Grêmio", estado:"Rio Grande do Sul", decada:"2000–2010", titulo:"Copa do Mundo 2002 e Champions League 2006", aliases:["ronaldinho","ronaldinho gaucho","ronaldo de assis moreira"]},
-    {nome:"Romário", numero:11, posicao:"Atacante", apelido:"Baixinho", time:"Vasco / Barcelona / Flamengo", estado:"Rio de Janeiro", decada:"1990", titulo:"Copa do Mundo 1994", aliases:["romario","romario de souza faria"]},
-    {nome:"Rivaldo", numero:10, posicao:"Meia-atacante", apelido:"Rivaldo", time:"Barcelona / Palmeiras", estado:"Pernambuco", decada:"1990–2000", titulo:"Copa do Mundo 2002 e Bola de Ouro 1999", aliases:["rivaldo"]},
-    {nome:"Zico", numero:10, posicao:"Meia", apelido:"Galinho de Quintino", time:"Flamengo", estado:"Rio de Janeiro", decada:"1970–1980", titulo:"Libertadores 1981 e Mundial de Clubes", aliases:["zico","arthur antunes coimbra"]},
-    {nome:"Sócrates", numero:8, posicao:"Meia", apelido:"Doutor", time:"Corinthians", estado:"Pará", decada:"1980", titulo:"Ídolo da Democracia Corintiana", aliases:["socrates","socrates brasileiro"]},
-    {nome:"Cafu", numero:2, posicao:"Lateral-direito", apelido:"Pendragon", time:"São Paulo / Roma / Milan", estado:"São Paulo", decada:"1990–2000", titulo:"Único bicampeão mundial como capitão (1994 e 2002)", aliases:["cafu","marcos evangelista de moraes"]},
-    {nome:"Roberto Carlos", numero:6, posicao:"Lateral-esquerdo", apelido:"Roberto Carlos", time:"Real Madrid", estado:"São Paulo", decada:"1990–2000", titulo:"Copa do Mundo 2002 e várias Champions League", aliases:["roberto carlos"]},
-    {nome:"Kaká", numero:22, posicao:"Meia-atacante", apelido:"Kaká", time:"São Paulo / Milan / Real Madrid", estado:"São Paulo", decada:"2000–2010", titulo:"Copa do Mundo 2002 e Bola de Ouro 2007", aliases:["kaka","ricardo izecson dos santos leite"]},
-    {nome:"Neymar Jr", numero:10, posicao:"Atacante", apelido:"Ney", time:"Santos / Barcelona / PSG / Al-Hilal", estado:"São Paulo", decada:"2010–2020", titulo:"Ouro olímpico em 2016", aliases:["neymar","neymar jr","neymar da silva santos junior"]},
-    {nome:"Marta", numero:10, posicao:"Atacante", apelido:"Rainha", time:"Vasco / Umeå / Orlando Pride", estado:"Alagoas", decada:"2000–2020", titulo:"6 vezes eleita melhor do mundo pela FIFA", aliases:["marta","marta vieira da silva"]},
-    {nome:"Taffarel", numero:1, posicao:"Goleiro", apelido:"Taffarel", time:"Internacional / Parma", estado:"Rio Grande do Sul", decada:"1990", titulo:"Copa do Mundo 1994", aliases:["taffarel","claudio taffarel"]},
-    {nome:"Vinícius Júnior", numero:7, posicao:"Atacante", apelido:"Vini Jr", time:"Flamengo / Real Madrid", estado:"Rio de Janeiro", decada:"2020", titulo:"Champions League com o Real Madrid", aliases:["vinicius junior","vini jr","vinicius"]},
-    {nome:"Casemiro", numero:5, posicao:"Volante", apelido:"Casemiro", time:"São Paulo / Real Madrid / Manchester United", estado:"São Paulo", decada:"2010–2020", titulo:"5 títulos de Champions League", aliases:["casemiro"]},
-    {nome:"Thiago Silva", numero:3, posicao:"Zagueiro", apelido:"Monstro", time:"Fluminense / PSG / Chelsea", estado:"Rio de Janeiro", decada:"2010–2020", titulo:"Champions League 2021 pelo Chelsea", aliases:["thiago silva"]},
-    {nome:"Marcelo", numero:12, posicao:"Lateral-esquerdo", apelido:"Marcelo", time:"Fluminense / Real Madrid", estado:"Rio de Janeiro", decada:"2010–2020", titulo:"Jogador mais titulado da história do Real Madrid", aliases:["marcelo"]},
-    {nome:"Adriano", numero:9, posicao:"Atacante", apelido:"Imperador", time:"Flamengo / Inter de Milão", estado:"Rio de Janeiro", decada:"2000", titulo:"Copa América 2004 e 2007", aliases:["adriano","adriano imperador"]},
-    {nome:"Robinho", numero:7, posicao:"Atacante", apelido:"Robinho", time:"Santos / Real Madrid / Milan", estado:"São Paulo", decada:"2000–2010", titulo:"Libertadores 2011 pelo Santos", aliases:["robinho"]},
-    {nome:"Hulk", numero:7, posicao:"Atacante", apelido:"Hulk", time:"Porto / Zenit / Atlético-MG", estado:"Minas Gerais", decada:"2010–2020", titulo:"Vários títulos estaduais e nacionais", aliases:["hulk","givanildo vieira de sousa"]},
-    {nome:"Fabinho", numero:3, posicao:"Volante", apelido:"Fabinho", time:"Liverpool / Al-Ittihad", estado:"São Paulo", decada:"2010–2020", titulo:"Champions League 2019 pelo Liverpool", aliases:["fabinho"]},
-    {nome:"Éder Militão", numero:3, posicao:"Zagueiro", apelido:"Militão", time:"Real Madrid", estado:"São Paulo", decada:"2020", titulo:"Champions League com o Real Madrid", aliases:["eder militao","militao"]},
-    {nome:"Raphinha", numero:11, posicao:"Atacante", apelido:"Raphinha", time:"Barcelona", estado:"Rio Grande do Sul", decada:"2020", titulo:"Titular na seleção brasileira", aliases:["raphinha","raphael dias belloli"]},
-    {nome:"Rodrygo", numero:11, posicao:"Atacante", apelido:"Rodrygo", time:"Real Madrid", estado:"São Paulo", decada:"2020", titulo:"Champions League com o Real Madrid", aliases:["rodrygo"]},
-    {nome:"Gabriel Jesus", numero:9, posicao:"Atacante", apelido:"Jesus", time:"Palmeiras / Manchester City / Arsenal", estado:"São Paulo", decada:"2010–2020", titulo:"Ouro olímpico em 2016", aliases:["gabriel jesus"]},
-    {nome:"Richarlison", numero:9, posicao:"Atacante", apelido:"Pombo", time:"Tottenham", estado:"Espírito Santo", decada:"2020", titulo:"Ouro olímpico em 2020", aliases:["richarlison"]},
-    {nome:"Bruno Guimarães", numero:39, posicao:"Volante", apelido:"BG", time:"Newcastle United", estado:"Rio de Janeiro", decada:"2020", titulo:"Titular na seleção brasileira", aliases:["bruno guimaraes","bg"]},
-    {nome:"Dani Alves", numero:2, posicao:"Lateral-direito", apelido:"Dani Alves", time:"Barcelona / PSG", estado:"Bahia", decada:"2000–2010", titulo:"Jogador mais titulado da história do futebol", aliases:["dani alves"]},
-    {nome:"David Luiz", numero:4, posicao:"Zagueiro", apelido:"David Luiz", time:"Chelsea / Arsenal", estado:"São Paulo", decada:"2010–2020", titulo:"Europa League 2019 pelo Chelsea", aliases:["david luiz"]},
-    {nome:"Alisson Becker", numero:1, posicao:"Goleiro", apelido:"Alisson", time:"Liverpool", estado:"Rio Grande do Sul", decada:"2010–2020", titulo:"Champions League 2019 pelo Liverpool", aliases:["alisson","alisson becker"]},
-    {nome:"Ederson", numero:1, posicao:"Goleiro", apelido:"Ederson", time:"Manchester City", estado:"São Paulo", decada:"2010–2020", titulo:"Várias Premier League pelo Manchester City", aliases:["ederson"]},
-    {nome:"Roberto Firmino", numero:9, posicao:"Atacante", apelido:"Bobby", time:"Liverpool", estado:"Alagoas", decada:"2010–2020", titulo:"Champions League 2019 pelo Liverpool", aliases:["firmino","roberto firmino","bobby firmino"]},
-    {nome:"Philippe Coutinho", numero:10, posicao:"Meia-atacante", apelido:"Magrinho", time:"Liverpool / Barcelona", estado:"Rio de Janeiro", decada:"2010–2020", titulo:"Titular histórico da seleção", aliases:["coutinho","philippe coutinho"]},
-    {nome:"Willian", numero:10, posicao:"Atacante", apelido:"Willian", time:"Chelsea / Arsenal", estado:"Bahia", decada:"2010–2020", titulo:"Europa League 2019 pelo Chelsea", aliases:["willian"]}
-  ];
+  // Lista de jogadores vem do arquivo players.js (carregado antes deste script)
+  const players = PLAYERS;
+
+  // ---------- dificuldade ----------
+  let currentDifficulty = "facil";
+
+  function activePlayers(){
+    const filtered = players.filter(p => p.dificuldade === currentDifficulty);
+    return filtered.length ? filtered : players;
+  }
 
   // ---------- state ----------
-  // Cost to reveal each successive hint card: a 1ª é grátis, as demais custam
-  // 20 pontos cada, então a pontuação da rodada sempre cai em números
-  // redondos: 100 -> 80 -> 60 -> 40 -> 20. Como sobram 20 pontos mesmo
-  // usando as 5 dicas, elas nunca zeram a rodada sozinhas — só os chutes
-  // errados (MISS_PENALTY) podem fazer isso.
-  const HINT_COSTS = [0, 20, 20, 20, 20];
+  // Cost to reveal each successive hint card: the 1st is free, and every
+  // card after that costs more than the one before it.
+  const HINT_COSTS = [0, 10, 15, 25, 30];
   const BASE_POINTS = 100;
   const MISS_PENALTY = 5;
   const HINT_POOL = [
@@ -55,7 +25,7 @@
     {key:"titulo", label:"Título marcante"}
   ];
 
-  let pool = shuffle([...players]);
+  let pool = shuffle([...activePlayers()]);
   let current = null;
   let hintsUsed = 0;
   let remainingHints = [];
@@ -80,7 +50,7 @@
     return audioCtx;
   }
 
-  function playTone({freq = 440, duration = 0.12, type = "sine", volume = 0.08, delay = 0, glideTo = null} = {}){
+  function playTone({freq = 440, duration = 0.12, type = "sine", volume = 0.18, delay = 0, glideTo = null} = {}){
     if(!soundEnabled) return;
     const ctx = getAudioCtx();
     if(!ctx) return;
@@ -100,27 +70,27 @@
   }
 
   const sfx = {
-    click(){ playTone({freq:520, duration:0.05, type:"square", volume:0.045}); },
-    tick(){ playTone({freq:640 + Math.random()*160, duration:0.045, type:"square", volume:0.04}); },
+    click(){ playTone({freq:520, duration:0.05, type:"square", volume:0.10}); },
+    tick(){ playTone({freq:640 + Math.random()*160, duration:0.045, type:"square", volume:0.09}); },
     settle(){
-      playTone({freq:392, duration:0.12, type:"triangle", volume:0.09});
-      playTone({freq:523.25, duration:0.20, type:"triangle", volume:0.08, delay:0.08});
+      playTone({freq:392, duration:0.12, type:"triangle", volume:0.20});
+      playTone({freq:523.25, duration:0.20, type:"triangle", volume:0.18, delay:0.08});
     },
     correct(){
-      [523.25, 659.25, 783.99].forEach((f, i) => playTone({freq:f, duration:0.16, type:"triangle", volume:0.09, delay:i * 0.09}));
+      [523.25, 659.25, 783.99].forEach((f, i) => playTone({freq:f, duration:0.16, type:"triangle", volume:0.20, delay:i * 0.09}));
     },
     wrong(){
-      playTone({freq:220, duration:0.18, type:"sawtooth", volume:0.07, glideTo:140});
+      playTone({freq:220, duration:0.18, type:"sawtooth", volume:0.15, glideTo:140});
     },
-    hintOpen(){ playTone({freq:600, duration:0.08, type:"sine", volume:0.06}); },
+    hintOpen(){ playTone({freq:600, duration:0.08, type:"sine", volume:0.13}); },
     hintPick(){
-      playTone({freq:660, duration:0.10, type:"sine", volume:0.08});
-      playTone({freq:880, duration:0.14, type:"sine", volume:0.07, delay:0.07});
+      playTone({freq:660, duration:0.10, type:"sine", volume:0.17});
+      playTone({freq:880, duration:0.14, type:"sine", volume:0.15, delay:0.07});
     },
     zeroOut(){
-      [392, 330, 262].forEach((f, i) => playTone({freq:f, duration:0.20, type:"sawtooth", volume:0.07, delay:i * 0.12}));
+      [392, 330, 262].forEach((f, i) => playTone({freq:f, duration:0.20, type:"sawtooth", volume:0.15, delay:i * 0.12}));
     },
-    reveal(){ playTone({freq:340, duration:0.20, type:"sine", volume:0.06}); }
+    reveal(){ playTone({freq:340, duration:0.20, type:"sine", volume:0.14}); }
   };
 
   // ---------- dom ----------
@@ -147,6 +117,7 @@
   const scoreFloat = document.getElementById("scoreFloat");
   const playersList = document.getElementById("playersList");
   const soundToggle = document.getElementById("soundToggle");
+  const difficultyBar = document.getElementById("difficultyBar");
 
   // Anima a troca do placar: sobe o número em contagem, faz a barra
   // pulsar e mostra um "+N" subindo e sumindo por cima.
@@ -245,7 +216,7 @@
   }
 
   function pickPlayer(){
-    if(pool.length === 0) pool = shuffle([...players]);
+    if(pool.length === 0) pool = shuffle([...activePlayers()]);
     return pool.pop();
   }
 
@@ -532,7 +503,38 @@
     if(soundEnabled) sfx.click();
   });
 
+  difficultyBar.addEventListener("click", e => {
+    const btn = e.target.closest(".diff-btn");
+    if(!btn || spinning) return;
+    const diff = btn.dataset.diff;
+    if(diff === currentDifficulty) return;
+
+    sfx.click();
+    currentDifficulty = diff;
+    difficultyBar.querySelectorAll(".diff-btn").forEach(b => b.classList.toggle("active", b === btn));
+
+    pool = shuffle([...activePlayers()]);
+    current = pickPlayer();
+    const numberEl = jerseyTrack.querySelector(".jersey-number");
+    if(numberEl) numberEl.textContent = current.numero;
+    startRound();
+  });
+
   current = pickPlayer();
   jerseyTrack.appendChild(makeJerseySlot(current.numero));
   startRound();
+
+  const footerYear = document.getElementById("footerYear");
+  if(footerYear) footerYear.textContent = new Date().getFullYear();
+
+  // Bloqueia o menu de contexto (clique direito / long-press) e a seleção
+  // de texto/imagens em toda a página. O campo de chute (input) continua
+  // funcionando normalmente para digitar.
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("dragstart", e => e.preventDefault());
+  document.addEventListener("selectstart", e => {
+    const tag = e.target.tagName;
+    if(tag === "INPUT" || tag === "TEXTAREA") return;
+    e.preventDefault();
+  });
 })();
