@@ -343,7 +343,7 @@
 
   function giveFreeRandomHint(){
     cardsOpen = true;
-    hintBtn.classList.add("hidden");
+    hintBtn.disabled = true;
     feedback.textContent = "Sua primeira dica é grátis!";
     feedback.className = "info";
     sfx.hintOpen();
@@ -377,7 +377,7 @@
 
   function openHintCards(){
     cardsOpen = true;
-    hintBtn.classList.add("hidden");
+    hintBtn.disabled = true;
     feedback.textContent = "Escolha uma carta: cada uma tem um valor diferente.";
     feedback.className = "info";
     sfx.hintOpen();
@@ -428,7 +428,6 @@
       hintOverlay.classList.remove("show");
       document.body.classList.remove("no-scroll");
       hintCards.innerHTML = "";
-      hintBtn.classList.remove("hidden");
       const pts = currentPoints();
       if(pts <= 0){
         hintBtn.disabled = true;

@@ -558,9 +558,7 @@ body{
   padding:11px 18px;
   font-size:15px;
 }
-#hintBtn.hidden{
-  display:none;
-}
+
 
 /* ---------- hint overlay (fullscreen) ---------- */
 .hint-overlay{
