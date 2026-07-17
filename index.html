@@ -13,6 +13,13 @@
 
   <header class="top">
     <div class="brand">CAMISA<span>100</span></div>
+    <button class="history-toggle" id="historyToggle" type="button" aria-label="Ver histórico de partidas" title="Histórico">
+      <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/>
+        <path d="M3.5 4.2v4.4h4.4"/>
+        <path d="M12 7.5v5l3.3 2"/>
+      </svg>
+    </button>
     <button class="sound-toggle" id="soundToggle" type="button" aria-label="Desativar som" aria-pressed="false" title="Som">
       <svg class="icon-sound-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="currentColor">
         <path d="M4 9v6h3.6l4.9 4V5l-4.9 4H4Z"/>
@@ -99,6 +106,7 @@
   <div class="hint-overlay-inner">
     <div class="hint-overlay-title">Escolha uma carta</div>
     <div class="hint-cards" id="hintCards"></div>
+    <div class="hint-overlay-note">Toque fora das cartas para sair sem escolher</div>
   </div>
   <div class="boom-flash" id="boomFlash"><span class="boom-text">BOOM!</span></div>
 </div>
@@ -107,6 +115,14 @@
   <div class="answer-overlay-inner">
     <div class="answer-card" id="answerCard"></div>
     <button class="btn btn-ghost answer-close" id="answerCloseBtn">Fechar</button>
+  </div>
+</div>
+
+<div class="history-overlay" id="historyOverlay">
+  <div class="history-overlay-inner">
+    <div class="history-overlay-title">Histórico de partidas</div>
+    <div class="history-list" id="historyList"></div>
+    <button class="btn btn-ghost history-close" id="historyCloseBtn">Fechar</button>
   </div>
 </div>
 

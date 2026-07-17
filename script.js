@@ -64,6 +64,47 @@
   let spinning = false;
   let missPenalty = 0;
 
+  // ---------- save local (pontuação + histórico) ----------
+  // Guarda o placar e as últimas partidas no localStorage do navegador,
+  // então o jogador não perde o progresso ao fechar a aba ou recarregar.
+  const STORAGE_SCORE_KEY = "camisa100.totalScore";
+  const STORAGE_HISTORY_KEY = "camisa100.history";
+  const HISTORY_LIMIT = 10;
+
+  function loadSavedScore(){
+    try{
+      const raw = localStorage.getItem(STORAGE_SCORE_KEY);
+      const n = parseInt(raw, 10);
+      return Number.isFinite(n) ? n : 0;
+    } catch(e){
+      return 0;
+    }
+  }
+
+  function saveScore(){
+    try{ localStorage.setItem(STORAGE_SCORE_KEY, String(totalScore)); }
+    catch(e){ /* localStorage indisponível (modo privado, etc.) — ignora */ }
+  }
+
+  function loadHistory(){
+    try{
+      const raw = localStorage.getItem(STORAGE_HISTORY_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list : [];
+    } catch(e){
+      return [];
+    }
+  }
+
+  function addHistoryEntry(entry){
+    try{
+      const list = loadHistory();
+      list.unshift(entry);
+      if(list.length > HISTORY_LIMIT) list.length = HISTORY_LIMIT;
+      localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(list));
+    } catch(e){ /* ignora se não puder salvar */ }
+  }
+
   // ---------- áudio ----------
   // Sons curtos sintetizados na hora via Web Audio API (sem arquivos externos).
   let audioCtx = null;
@@ -144,6 +185,10 @@
   const playersList = document.getElementById("playersList");
   const soundToggle = document.getElementById("soundToggle");
   const difficultyBar = document.getElementById("difficultyBar");
+  const historyToggle = document.getElementById("historyToggle");
+  const historyOverlay = document.getElementById("historyOverlay");
+  const historyList = document.getElementById("historyList");
+  const historyCloseBtn = document.getElementById("historyCloseBtn");
 
   // Anima a troca do placar: sobe o número em contagem, faz a barra
   // pulsar e mostra um "+N" subindo e sumindo por cima.
@@ -190,6 +235,11 @@
 
   const RING_CIRC = 2 * Math.PI * 98;
   ringValue.setAttribute("stroke-dasharray", RING_CIRC.toFixed(2));
+
+  // Recupera a pontuação salva (se existir) para o jogador não perder
+  // o progresso ao voltar ao jogo.
+  totalScore = loadSavedScore();
+  totalScoreEl.textContent = totalScore;
 
   playersList.innerHTML = players.map(p => `<option value="${p.nome}">`).join("");
 
@@ -348,10 +398,8 @@
     feedback.className = "info";
     sfx.hintOpen();
 
-    // A dica grátis é sempre a de menor custo, para que o "piso" de pontos
-    // ao usar todas as 5 dicas fique previsível (sempre ~25), em vez de
-    // variar de 25 a 50 dependendo de qual carta calhasse de ser sorteada.
-    const hint = remainingHints.reduce((min, h) => h.cost < min.cost ? h : min, remainingHints[0]);
+    // A dica grátis é sorteada aleatoriamente entre as dicas disponíveis.
+    const hint = remainingHints[Math.floor(Math.random() * remainingHints.length)];
 
     hintCards.innerHTML = "";
     const card = document.createElement("div");
@@ -405,6 +453,18 @@
 
     hintOverlay.classList.add("show");
     document.body.classList.add("no-scroll");
+  }
+
+  // Fecha a seleção de cartas sem obrigar o jogador a escolher uma,
+  // usado quando ele clica na área escura fora das cartas.
+  function closeHintCards(){
+    if(!cardsOpen) return;
+    cardsOpen = false;
+    sfx.click();
+    hintOverlay.classList.remove("show");
+    document.body.classList.remove("no-scroll");
+    hintCards.innerHTML = "";
+    hintBtn.disabled = roundOver || remainingHints.length === 0;
   }
 
   function pickHintCard(cardEl, hint, isFree = false){
@@ -465,7 +525,7 @@
       feedback.textContent = `Isso aí! +${pts} pontos.`;
       feedback.className = "good";
       sfx.correct();
-      finishRound(true);
+      finishRound(true, pts);
     } else {
       missPenalty += MISS_PENALTY;
       const pts = currentPoints();
@@ -490,7 +550,7 @@
     }
   }
 
-  function finishRound(won){
+  function finishRound(won, pointsEarned = 0){
     roundOver = true;
     cardsOpen = false;
     guessInput.disabled = true;
@@ -516,6 +576,16 @@
       feedback.textContent = `Resposta revelada: ${current.nome}. Rodada sem pontos.`;
       feedback.className = "info";
     }
+
+    if(won) saveScore();
+    addHistoryEntry({
+      nome: current.nome,
+      numero: current.numero,
+      dificuldade: currentDifficulty,
+      won: !!won,
+      points: won ? pointsEarned : 0,
+      when: Date.now()
+    });
   }
 
   hintBtn.addEventListener("click", () => { sfx.click(); giveHint(); });
@@ -528,9 +598,63 @@
     answerOverlay.classList.remove("show");
     document.body.classList.remove("no-scroll");
   }
+  hintOverlay.addEventListener("click", e => {
+    // Só fecha se o clique foi na área escura, fora das cartas e do título.
+    if(!e.target.closest(".hint-card") && !e.target.closest(".hint-overlay-title")) closeHintCards();
+  });
+
   answerCloseBtn.addEventListener("click", closeAnswerOverlay);
   answerOverlay.addEventListener("click", e => {
     if(e.target === answerOverlay) closeAnswerOverlay();
+  });
+
+  // ---------- histórico de partidas ----------
+  const DIFF_LABEL = {facil:"Fácil", medio:"Médio", dificil:"Difícil"};
+
+  function formatHistoryDate(ts){
+    const d = new Date(ts);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${dd}/${mm} ${hh}:${min}`;
+  }
+
+  function renderHistory(){
+    const list = loadHistory();
+    if(list.length === 0){
+      historyList.innerHTML = `<div class="history-empty">Nenhuma partida ainda. Jogue uma rodada para começar seu histórico!</div>`;
+      return;
+    }
+    historyList.innerHTML = list.map(item => `
+      <div class="history-item ${item.won ? "won" : "lost"}">
+        <div class="history-badge">${item.won ? "✓" : "✕"}</div>
+        <div class="history-info">
+          <span class="history-name">${item.nome} <span style="color:var(--muted); font-weight:500;">· #${item.numero}</span></span>
+          <span class="history-meta">${DIFF_LABEL[item.dificuldade] || item.dificuldade} · ${formatHistoryDate(item.when)}</span>
+        </div>
+        <div class="history-points">${item.won ? `+${item.points}` : "0"}</div>
+      </div>
+    `).join("");
+  }
+
+  function openHistory(){
+    sfx.click();
+    renderHistory();
+    historyOverlay.classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+
+  function closeHistoryOverlay(){
+    sfx.click();
+    historyOverlay.classList.remove("show");
+    document.body.classList.remove("no-scroll");
+  }
+
+  historyToggle.addEventListener("click", openHistory);
+  historyCloseBtn.addEventListener("click", closeHistoryOverlay);
+  historyOverlay.addEventListener("click", e => {
+    if(e.target === historyOverlay) closeHistoryOverlay();
   });
 
   jerseyBtn.addEventListener("click", () => {
